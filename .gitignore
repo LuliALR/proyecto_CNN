@@ -1,6 +1,5 @@
-*Zone.Identifier
 venv
-first_model.h5
-second_model.h5
-fourth_model.h5
-fifth_model.h5
+__pycache__
+CIFAR10_classifier
+*.npz
+data
