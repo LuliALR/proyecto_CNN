@@ -29,6 +29,7 @@ def create_model():
         ]
     )
 
+    model.build((None, 32, 32, 3))
     return model
 
 mobilenet = create_model()
