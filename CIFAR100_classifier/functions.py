@@ -10,7 +10,7 @@ que incluyen:
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
-
+from PIL import Image
 
 def normalize(dataset: np.ndarray) -> np.ndarray:
     """
@@ -33,6 +33,140 @@ def encode(labelset: np.ndarray, classes: int) -> np.ndarray:
     labelset = labelset.flatten()
     labelset = tf.one_hot(labelset.astype(np.int32), depth=classes)
     return labelset
+
+def predict(image_filepath: str) -> str:
+    """
+    Predicción que da el modelo a la imagen indicada por la ubicación del archivo.
+    """
+    # Load image, resize and normilize
+    image = Image.open(image_filepath)
+    image = image.resize((32, 32))
+    image = np.array(image) / 255.0
+    
+    # Load model
+    model = load_model("trained_models/mobilenet_best.h5")
+    
+    # Classes list
+    map = [
+        "apple",
+        "aquarium_fish",
+        "baby",
+        "bear",
+        "beaver",
+        "bed",
+        "bee",
+        "beetle",
+        "bicycle",
+        "bottle",
+        "bowl",
+        "boy",
+        "bridge",
+        "bus",
+        "butterfly",
+        "camel",
+        "can",
+        "castle",
+        "caterpillar",
+        "cattle",
+        "chair",
+        "chimpanzee",
+        "clock",
+        "cloud",
+        "cockroach",
+        "couch",
+        "cra",
+        "crocodile",
+        "cup",
+        "dinosaur",
+        "dolphin",
+        "elephant",
+        "flatfish",
+        "forest",
+        "fox",
+        "girl",
+        "hamster",
+        "house",
+        "kangaroo",
+        "keyboard",
+        "lamp",
+        "lawn_mower",
+        "leopard",
+        "lion",
+        "lizard",
+        "lobster",
+        "man",
+        "maple_tree",
+        "motorcycle",
+        "mountain",
+        "mouse",
+        "mushroom",
+        "oak_tree",
+        "orange",
+        "orchid",
+        "otter",
+        "palm_tree",
+        "pear",
+        "pickup_truck",
+        "pine_tree",
+        "plain",
+        "plate",
+        "poppy",
+        "porcupine",
+        "possum",
+        "rabbit",
+        "raccoon",
+        "ray",
+        "road",
+        "rocket",
+        "rose",
+        "sea",
+        "seal",
+        "shark",
+        "shrew",
+        "skunk",
+        "skyscraper",
+        "snail",
+        "snake",
+        "spider",
+        "squirrel",
+        "streetcar",
+        "sunflower",
+        "sweet_pepper",
+        "table",
+        "tank",
+        "telephone",
+        "television",
+        "tiger",
+        "tractor",
+        "train",
+        "trout",
+        "tulip",
+        "turtle",
+        "wardrobe",
+        "whale",
+        "willow_tree",
+        "wolf",
+        "woman",
+        "worm",
+        ]
+    
+    # Make prediction
+    prediction = model.predict(np.expand_dims(image, axis=0), verbose=0)
+    prediction = prediction[0,:]
+    index = np.argmax(prediction)
+    label = map[index]
+    
+    # Make lists with labels and their probabilities of the first five predictions
+    labels = []
+    probabilities = []
+    for i in range (5):
+        index = np.argmax(prediction)
+        labels.append(map[index])
+        probabilities.append(prediction[index])
+        del map[index]
+        prediction = np.delete(prediction, index)
+
+    return label, labels, probabilities
 
 def map_features(original_model, activation_model, layer: int, image: np.ndarray):
     """
